@@ -1,0 +1,80 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import='java.sql.*'%>
+<%@ page import="com.myc.tools.*"  %>  <!-- 将jsp所用的java代码封装进了com.myc.tools的包里，在这里进行引用 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="js/checkLogin.js"></script>
+<title>学生信息管理系统登录入口</title>
+</head>
+<!-- 在这里设置一个js方法，用于get到登陆权限的等级的值，好跳到不同的页面 -->
+<script language="javascript">
+function stu(){  //创建一个stu（）方法，以便调用
+    document.form1.action="checkLogin.jsp?level=student";  // 按动按钮得到一个权限值=student，并传入checklogin.jsp这个页面
+    document.form1.submit(); //用于提交所get的值
+}
+function tea(){
+    document.form1.action="checkLogin.jsp?level=teacher";
+    document.form1.submit();
+}
+function ad(){
+    document.form1.action="checkLogin.jsp?level=admain";
+    document.form1.submit();
+}
+</script>
+
+<script type="text/javascript">
+		  function refresh(){
+		   document.getElementById("imgValidate").src="code.jsp?now="+Math.random();
+		  }
+		</script>
+<body>
+		<style type="text/css">
+		     body{
+		       background: url(image/zzu.jpg);
+		       background:100%;
+		     }
+		</style>
+     <body style="background: url(image/zzu.jpg) " >
+	<div align='center'> <!-- 设置出现的方位 -->
+		<h3>学生信息管理系统-登录</h3>
+	</div>
+	<div align="center" >
+	<form id="form1" name="form1"  action="checkLogin.jsp" method="post" onsubmit="return checkLogin();"> 
+	<!-- action为向何处传值，method为规定用于发送 form-data 的 HTTP 方法。onsubmit 事件会在表单中的确认按钮被点击时发生 -->
+		<br><br>
+		<table>
+			<tr align="center">
+				<td colspan="2"><%=request.getAttribute("MSG")== null ?"<font color='blue'>" : "<font color='red'>"%><%=request.getAttribute("MSG")== null ?"欢迎来到学生管理系统</font>" : request.getAttribute("MSG")+"</font>"%></td>
+				<!-- name了一个MSG，来得到一个值，在后面进行异常或错误的检验 -->
+			</tr>
+			
+			<tr>
+
+				<td>账&nbsp;&nbsp;&nbsp;&nbsp;号</td><td><input type="text" name='number' id="number"></td>  <!-- 账号进行输入，类型为text，名字为number,id为number -->
+			</tr>
+			<tr>
+				<td>密&nbsp;&nbsp;&nbsp;&nbsp;码</td><td><input type="password" name='password' id="password"> </td> <!-- password类型为密码不显示，显示**	-->	
+			</tr>
+			<tr>
+				<td>验证码 </td><td><input type="text" name="code" size="10"> 
+				<img id="imgValidate"  src="code.jsp" onclick="refresh();">
+				<a onclick="javascript:refresh(); return false;" href="#"
+				style="color.red;">看不清？换一张</a>
+				</td>
+			</tr>
+			<tr align='center'>
+				<td colspan='2'><input type="button" value="学生登录" onclick="stu();"> <!-- 不同按钮传入的权限等级不一样，调用的方法也不一样 -->
+				<input type="button" value="老师登录" onclick="tea();">
+				<input type="button" value="管理员登录" onclick="ad();">
+				<input type="reset" value="重置">
+				
+				</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+</body>
+</html>

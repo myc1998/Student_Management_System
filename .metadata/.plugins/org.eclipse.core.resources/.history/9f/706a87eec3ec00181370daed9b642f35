@@ -1,0 +1,76 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="com.myc.tools.*" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<%
+	request.setCharacterEncoding("UTF-8");
+
+	String number = request.getParameter("number");
+	String password = request.getParameter("password");
+	Connection conn = null;
+	PreparedStatement ps = null;
+	ResultSet rs = null;
+	String sql1 = "select * from tb_student where stu_id = ?";
+	String sql2 = "select * from management where admian_name = ?";
+	String sql3 = "select * from tb_teacher where teacher_id = ?";
+	boolean isLogin = false;
+	Student student = null;
+	admian Admain=null;
+	teacher Teacher=null;
+	try{
+		conn = DButil.getDBConnection();
+		ps = conn.prepareStatement(sql1); //预处理？
+		ps.setString(1,number );
+		rs = ps.executeQuery();
+		if(rs.next()){
+			if(rs.getString("stu_password").equals(password)){
+				student = new Student();
+				student.setstu_id(number);
+				student.setstu_name(rs.getString("stu_name"));
+				student.setstu_sex(rs.getString("stu_sex"));
+				student.setstu_age(rs.getInt("stu_age"));
+				student.setstu_major(rs.getString("stu_major"));
+				student.setstu_sdept(rs.getString("stu_sdept"));
+				student.setstu_password(rs.getString("stu_password"));
+				student.setstu_phone(rs.getString("stu_phone"));
+				isLogin = true;
+			}
+			else if(rs.getString("admian_password").equals(password)){
+				Admain=new admian();
+				Admain.setadmian_name(number);
+				Admain.setadmian_password(rs.getString("admian_password"));
+			}
+			else if(rs.getString("teacher_password").equals(password)){
+				Teacher=new teacher();
+				Teacher.setteacher_id(number);
+				Teacher.setteacher_password(rs.getString("teacher_password"));
+			}
+		}
+	}catch(Exception e){
+		e.printStackTrace();
+	}finally{
+		DButil.closeResultSet(rs);
+		DButil.closeStatement(ps);
+		DButil.closeConnection(conn);
+	}
+	
+	if(isLogin){
+		session.setAttribute(Constance.SESSION_STU_INFO, student);
+		session.setAttribute(Constance.SESSION_STU_INFO, Admain);	
+		session.setAttribute(Constance.SESSION_STU_INFO, Teacher);	
+		response.sendRedirect("register.jsp");	
+	}else{
+		request.setAttribute("MSG", "用户名或者密码错误！");
+		request.getRequestDispatcher("login.jsp").forward(request, response);
+	}
+
+%>
+</body>
+</html>
